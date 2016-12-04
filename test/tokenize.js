@@ -1,5 +1,5 @@
 const test = require('ava')
-const tokenize = require('../tokenize')
+const tokenize = require('../src/tokenize')
 
 test('tokenize basic math expression', t => {
     let input = '5 - 3*4 + 44 /6^3'
