@@ -29,8 +29,14 @@ module.exports = function(input) {
             }
         }
 
-        if (token && token[0] != 'ignore') tokens.push(token)
-        if (length == 0) throw new Error('Syntax error: Invalid or unexpected token')
+        if (token && token[0] != 'ignore') {
+            tokens.push(token)
+        }
+
+        if (length == 0) {
+            tokens.push(['error', 'Syntax error: Invalid or unexpected token', i])
+            break
+        }
 
         i += length
     }
