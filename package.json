@@ -1,7 +1,7 @@
 {
   "name": "kalk-lang",
   "version": "0.1.0",
-  "description": "A math inspired language.",
+  "description": "A math-inspired language.",
   "author": "Yichuan Shen",
   "main": "index.js",
   "repository": {
