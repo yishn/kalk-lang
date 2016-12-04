@@ -1,42 +1,42 @@
 const test = require('ava')
-const {tokenize} = require('../index')
+const tokenize = require('../tokenize')
 
 test('tokenize basic math expression', t => {
     let input = '5 - 3*4 + 44 /6^3'
 
     t.deepEqual(tokenize(input), [
-        ['number', '5'],
-        ['operator', '-'],
-        ['number', '3'],
-        ['operator', '*'],
-        ['number', '4'],
-        ['operator', '+'],
-        ['number', '44'],
-        ['operator', '/'],
-        ['number', '6'],
-        ['operator', '^'],
-        ['number', '3']
+        ['number', '5', 0],
+        ['operator', '-', 2],
+        ['number', '3', 4],
+        ['operator', '*', 5],
+        ['number', '4', 6],
+        ['operator', '+', 8],
+        ['number', '44', 10],
+        ['operator', '/', 13],
+        ['number', '6', 14],
+        ['operator', '^', 15],
+        ['number', '3', 16]
     ])
 
     input = '(-5 - 3.333)*4 + (44 /6.5)^3'
 
     t.deepEqual(tokenize(input), [
-        ['parenthesis', '('],
-        ['operator', '-'],
-        ['number', '5'],
-        ['operator', '-'],
-        ['number', '3.333'],
-        ['parenthesis', ')'],
-        ['operator', '*'],
-        ['number', '4'],
-        ['operator', '+'],
-        ['parenthesis', '('],
-        ['number', '44'],
-        ['operator', '/'],
-        ['number', '6.5'],
-        ['parenthesis', ')'],
-        ['operator', '^'],
-        ['number', '3']
+        ['parenthesis', '(', 0],
+        ['operator', '-', 1],
+        ['number', '5', 2],
+        ['operator', '-', 4],
+        ['number', '3.333', 6],
+        ['parenthesis', ')', 11],
+        ['operator', '*', 12],
+        ['number', '4', 13],
+        ['operator', '+', 15],
+        ['parenthesis', '(', 17],
+        ['number', '44', 18],
+        ['operator', '/', 21],
+        ['number', '6.5', 22],
+        ['parenthesis', ')', 25],
+        ['operator', '^', 26],
+        ['number', '3', 27]
     ])
 })
 
@@ -44,18 +44,18 @@ test('tokenize decimal numbers', t => {
     let input = '-5 - 3.333*4 + 44 /6.5^3'
 
     t.deepEqual(tokenize(input), [
-        ['operator', '-'],
-        ['number', '5'],
-        ['operator', '-'],
-        ['number', '3.333'],
-        ['operator', '*'],
-        ['number', '4'],
-        ['operator', '+'],
-        ['number', '44'],
-        ['operator', '/'],
-        ['number', '6.5'],
-        ['operator', '^'],
-        ['number', '3']
+        ['operator', '-', 0],
+        ['number', '5', 1],
+        ['operator', '-', 3],
+        ['number', '3.333', 5],
+        ['operator', '*', 10],
+        ['number', '4', 11],
+        ['operator', '+', 13],
+        ['number', '44', 15],
+        ['operator', '/', 18],
+        ['number', '6.5', 19],
+        ['operator', '^', 22],
+        ['number', '3', 23]
     ])
 })
 
@@ -63,33 +63,33 @@ test('tokenize variables', t => {
     let input = 'a1^2+a2^2=5hyp^2'
 
     t.deepEqual(tokenize(input), [
-        ['identifier', 'a1'],
-        ['operator', '^'],
-        ['number', '2'],
-        ['operator', '+'],
-        ['identifier', 'a2'],
-        ['operator', '^'],
-        ['number', '2'],
-        ['compare', '='],
-        ['number', '5'],
-        ['identifier', 'hyp'],
-        ['operator', '^'],
-        ['number', '2']
+        ['identifier', 'a1', 0],
+        ['operator', '^', 2],
+        ['number', '2', 3],
+        ['operator', '+', 4],
+        ['identifier', 'a2', 5],
+        ['operator', '^', 7],
+        ['number', '2', 8],
+        ['compare', '=', 9],
+        ['number', '5', 10],
+        ['identifier', 'hyp', 11],
+        ['operator', '^', 14],
+        ['number', '2', 15]
     ])
 
     input = 'hyp(a, b)^2 /= c'
 
     t.deepEqual(tokenize(input), [
-        ['identifier', 'hyp'],
-        ['parenthesis', '('],
-        ['identifier', 'a'],
-        ['separator', ','],
-        ['identifier', 'b'],
-        ['parenthesis', ')'],
-        ['operator', '^'],
-        ['number', '2'],
-        ['compare', '/='],
-        ['identifier', 'c']
+        ['identifier', 'hyp', 0],
+        ['parenthesis', '(', 3],
+        ['identifier', 'a', 4],
+        ['separator', ',', 5],
+        ['identifier', 'b', 7],
+        ['parenthesis', ')', 8],
+        ['operator', '^', 9],
+        ['number', '2', 10],
+        ['compare', '/=', 12],
+        ['identifier', 'c', 15]
     ])
 })
 
@@ -97,35 +97,31 @@ test('tokenize definitions', t => {
     let input = 'a := 5'
 
     t.deepEqual(tokenize(input), [
-        ['identifier', 'a'],
-        ['operator', ':='],
-        ['number', '5']
+        ['identifier', 'a', 0],
+        ['operator', ':=', 2],
+        ['number', '5', 5]
     ])
 
-    input = 'f(n) := f(n-1) + f(n-2) if n >= 2'
+    input = 'f(n) := f(n-1) + f(n-2)'
 
     t.deepEqual(tokenize(input), [
-        ['identifier', 'f'],
-        ['parenthesis', '('],
-        ['identifier', 'n'],
-        ['parenthesis', ')'],
-        ['operator', ':='],
-        ['identifier', 'f'],
-        ['parenthesis', '('],
-        ['identifier', 'n'],
-        ['operator', '-'],
-        ['number', '1'],
-        ['parenthesis', ')'],
-        ['operator', '+'],
-        ['identifier', 'f'],
-        ['parenthesis', '('],
-        ['identifier', 'n'],
-        ['operator', '-'],
-        ['number', '2'],
-        ['parenthesis', ')'],
-        ['keyword', 'if'],
-        ['identifier', 'n'],
-        ['compare', '>='],
-        ['number', '2']
+        ['identifier', 'f', 0],
+        ['parenthesis', '(', 1],
+        ['identifier', 'n', 2],
+        ['parenthesis', ')', 3],
+        ['operator', ':=', 5],
+        ['identifier', 'f', 8],
+        ['parenthesis', '(', 9],
+        ['identifier', 'n', 10],
+        ['operator', '-', 11],
+        ['number', '1', 12],
+        ['parenthesis', ')', 13],
+        ['operator', '+', 15],
+        ['identifier', 'f', 17],
+        ['parenthesis', '(', 18],
+        ['identifier', 'n', 19],
+        ['operator', '-', 20],
+        ['number', '2', 21],
+        ['parenthesis', ')', 22]
     ])
 })
