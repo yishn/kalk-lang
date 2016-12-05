@@ -4,12 +4,12 @@ module.exports = function(input) {
         parenthesis: /^(\(|\)|{|})/,
         separator: /^(,|;|_)/,
         compare: /^(=|(<|>)=?|\/=)/,
-        operator: /^(\+|-|\*|\/|\^|:=)/,
+        operator: /^(\+|-|\*|\/|\^|:=|#)/,
         logical: /^(not|and|or)\b/,
         keyword: /^(\.(\.{2})?|mod|for|if|in|max|min|sum|prod|otherwise)\b/,
         number: /^\d+(\.\d+)?/,
         identifier: /^[^\d\W_][^\W_]*('|~)*/,
-        ignore: /^\s+/
+        ignore: /^(\s+|--.*)/
     }
 
     let i = 0
