@@ -1,4 +1,6 @@
-module.exports = function(input) {
+const ParseError = require('./parse-error')
+
+function tokenize(input) {
     let tokens = []
     let rules = {
         parenthesis: /^(\(|\)|{|}|\[|\])/,
@@ -34,8 +36,7 @@ module.exports = function(input) {
         }
 
         if (length == 0) {
-            tokens.push(['error', 'Syntax error: Invalid or unexpected token', i])
-            break
+            throw new ParseError('Syntax error: Invalid or unexpected token', i)
         }
 
         i += length
@@ -43,3 +44,5 @@ module.exports = function(input) {
 
     return tokens
 }
+
+module.exports = tokenize
