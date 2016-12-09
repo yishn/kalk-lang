@@ -29,3 +29,67 @@ test('group input', t => {
         ['number', '3', 32]
     ])
 })
+
+test('parse expression', t => {
+    let input = '5+4*3'
+    let tokens = tokenize(input)
+
+    t.deepEqual(parser.parse(tokens), {
+        "type": "+",
+        "data": [
+            {
+                "type": "number",
+                "data": "5",
+                "index": 0
+            },
+            {
+                "type": "*",
+                "data": [
+                    {
+                        "type": "number",
+                        "data": "4",
+                        "index": 2
+                    },
+                    {
+                        "type": "number",
+                        "data": "3",
+                        "index": 4
+                    }
+                ],
+                "index": 3
+            }
+        ],
+        "index": 1
+    })
+
+    input = '(5+4) * 3'
+    tokens = tokenize(input)
+
+    t.deepEqual(parser.parse(tokens), {
+        "type": "*",
+        "data": [
+            {
+                "type": "+",
+                "data": [
+                    {
+                        "type": "number",
+                        "data": "5",
+                        "index": 1
+                    },
+                    {
+                        "type": "number",
+                        "data": "4",
+                        "index": 3
+                    }
+                ],
+                "index": 2
+            },
+            {
+                "type": "number",
+                "data": "3",
+                "index": 8
+            }
+        ],
+        "index": 6
+    })
+})
