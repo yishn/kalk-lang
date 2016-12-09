@@ -62,9 +62,7 @@ exports.parseExpression = function(grouped) {
     ]
 
     for (let [operators, from] of operatorPrecedence) {
-        operators = operators.map(x => ['operator', x])
-        let i = findFrom(from, grouped, operators)
-
+        let i = findFrom(from, grouped, operators.map(x => ['operator', x]))
         if (i < 0) continue
 
         let [, type, index] = grouped[i]

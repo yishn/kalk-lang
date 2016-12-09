@@ -6,9 +6,9 @@ function tokenize(input) {
         parenthesis: /^(\(|\)|{|}|\[|\])/,
         separator: /^(,|;|_|\|)/,
         compare: /^(=|(<|>)=?|\/=)/,
-        operator: /^(\+|-|\*|\/|\^|:=|#)/,
+        operator: /^(\+|-|\*|\/|\^|:=)/,
         logical: /^(not|and|or)\b/,
-        keyword: /^(\.{3}|(|mod|for|if|(not\s+)?in)\b)/,
+        keyword: /^(\.{3}|#|(|mod|for|if|(not\s+)?in)\b)/,
         number: /^\d+(\.\d+)?/,
         identifier: /^[^\d\W_][^\W_]*('|~)*/,
         ignore: /^(\s+|--.*)/

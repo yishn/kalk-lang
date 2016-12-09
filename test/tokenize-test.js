@@ -150,7 +150,7 @@ test('tokenize definitions', t => {
         ['separator', ',', 36],
         ['keyword', '...', 38],
         ['separator', ',', 41],
-        ['operator', '#', 43],
+        ['keyword', '#', 43],
         ['identifier', 'v', 44],
         ['parenthesis', '}', 45],
         ['parenthesis', '}', 46],
