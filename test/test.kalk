@@ -8,7 +8,7 @@ A := E + H - D
 B := F + H - D
 C := G + H - D
 
-norm(v) := sqrt(sum {v[i]^2 | i in {1, ..., #v}})
+norm(v) := sqrt(sum {v_i^2 | i in {1, ..., #v}})
 
 P(t) := F + t(B - F) if 0 <= t <= 1
 P(t) := 0

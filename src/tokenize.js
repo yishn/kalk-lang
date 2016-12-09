@@ -1,12 +1,12 @@
 module.exports = function(input) {
     let tokens = []
     let rules = {
-        parenthesis: /^(\(|\)|{|})/,
-        separator: /^(,|;|_)/,
+        parenthesis: /^(\(|\)|{|}|\[|\])/,
+        separator: /^(,|;|_|\|)/,
         compare: /^(=|(<|>)=?|\/=)/,
         operator: /^(\+|-|\*|\/|\^|:=|#)/,
         logical: /^(not|and|or)\b/,
-        keyword: /^(\.(\.{2})?|mod|for|if|in|max|min|sum|prod|otherwise)\b/,
+        keyword: /^(\.{3}|(|mod|for|if|(not\s+)?in)\b)/,
         number: /^\d+(\.\d+)?/,
         identifier: /^[^\d\W_][^\W_]*('|~)*/,
         ignore: /^(\s+|--.*)/
