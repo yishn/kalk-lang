@@ -93,3 +93,66 @@ test('parse expression', t => {
         "index": 6
     })
 })
+
+test('parse matrix', t => {
+    let input = '[1, 0, 0; 0, 1, 0; 0, 0, 1]'
+    let tokens = tokenize(input)
+
+    t.deepEqual(parser.parse(tokens), {
+        "type": "matrix",
+        "data": [
+            [
+                {
+                    "type": "number",
+                    "data": "1",
+                    "index": 1
+                },
+                {
+                    "type": "number",
+                    "data": "0",
+                    "index": 4
+                },
+                {
+                    "type": "number",
+                    "data": "0",
+                    "index": 7
+                }
+            ],
+            [
+                {
+                    "type": "number",
+                    "data": "0",
+                    "index": 10
+                },
+                {
+                    "type": "number",
+                    "data": "1",
+                    "index": 13
+                },
+                {
+                    "type": "number",
+                    "data": "0",
+                    "index": 16
+                }
+            ],
+            [
+                {
+                    "type": "number",
+                    "data": "0",
+                    "index": 19
+                },
+                {
+                    "type": "number",
+                    "data": "0",
+                    "index": 22
+                },
+                {
+                    "type": "number",
+                    "data": "1",
+                    "index": 25
+                }
+            ]
+        ],
+        "index": 1
+    })
+})
