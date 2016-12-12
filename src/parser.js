@@ -20,20 +20,26 @@ exports.group = function(tokens) {
     let i = 0
 
     while (i < tokens.length) {
-        if (tokenEqual(tokens[i], ['parenthesis', '('])) {
+        let [type, open, index] = tokens[i]
+        let openingParentheses = ['(', '{', '[']
+        let closingParentheses = [')', '}', ']']
+        let k = openingParentheses.indexOf(tokens[i][1])
+
+        if (type == 'parenthesis' && k >= 0) {
+            let close = closingParentheses[k]
             let depth = 0
             let j = i
 
             while (++j < tokens.length) {
-                if (tokenEqual(tokens[j], ['parenthesis', '('])) {
+                if (tokenEqual(tokens[j], ['parenthesis', open])) {
                     depth++
-                } else if (tokenEqual(tokens[j], ['parenthesis', ')'])) {
+                } else if (tokenEqual(tokens[j], ['parenthesis', close])) {
                     depth--
                     if (depth < 0) break
                 }
             }
 
-            newTokens.push(['group', exports.group(tokens.slice(i + 1, j)), tokens[i][2]])
+            newTokens.push([`group${open}${close}`, exports.group(tokens.slice(i + 1, j)), index])
             i = j + 1
         } else {
             newTokens.push(tokens[i])
@@ -47,11 +53,19 @@ exports.group = function(tokens) {
 exports.parseExpression = function(grouped) {
     if (grouped.length == 0) {
         return null
-    } else if (grouped.length == 1 && grouped[0][0] == 'group') {
-        return exports.parseExpression(grouped[0][1])
     } else if (grouped.length == 1) {
-        let [type, data, index] = grouped[0]
-        return {type, data, index}
+        let [type, tokens, ] = grouped[0]
+
+        if (type == 'group()') {
+            return exports.parseExpression(tokens)
+        } else if (type == 'group[]') {
+            return exports.parseMatrix(tokens)
+        } else if (type == 'group{}') {
+            return exports.parseSet(tokens)
+        } else {
+            let [type, data, index] = grouped[0]
+            return {type, data, index}
+        }
     }
 
     let operatorPrecedence = [

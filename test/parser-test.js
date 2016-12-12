@@ -7,7 +7,7 @@ test('group input', t => {
     let tokens = tokenize(input)
 
     t.deepEqual(parser.group(tokens), [
-        ['group', [
+        ['group()', [
             ['operator', '-', 1],
             ['number', '5', 2],
             ['operator', '-', 4],
@@ -16,10 +16,10 @@ test('group input', t => {
         ['operator', '*', 12],
         ['number', '4', 13],
         ['operator', '+', 15],
-        ['group', [
+        ['group()', [
             ['number', '44', 18],
             ['operator', '/', 21],
-            ['group', [
+            ['group()', [
                 ['number', '6.5', 23],
                 ['operator', '+', 26],
                 ['number', '2', 28],
