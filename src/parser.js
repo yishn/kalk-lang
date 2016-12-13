@@ -78,6 +78,28 @@ exports.parseMatrix = function(grouped) {
     }
 }
 
+exports.parseSet = function(grouped) {
+    let left = splitTokens(grouped, [['separator', '|']])
+    let right = null
+
+    if (left.length == 1) {
+        left = left[0]
+    } else if (left.length == 2) {
+        [left, right] = left
+    } else if (left.length > 2) {
+        throw new ParseError('Syntax error: Invalid set description')
+    }
+
+    let items = splitTokens(left, [['separator', ',']]).map(x => exports.parseExpression(x))
+    let rules = right && splitTokens(right, [['separator', ',']]).map(x => exports.parseCondition(x))
+
+    return {
+        type: 'set',
+        data: [items, rules],
+        index: grouped[0][2]
+    }
+}
+
 exports.parseExpression = function(grouped) {
     if (grouped.length == 0) {
         return null
