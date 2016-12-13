@@ -54,6 +54,16 @@ exports.group = function(tokens) {
         }
     }
 
+    for (let j = 0; j < newTokens.length; j++) {
+        let [type, data, index] = newTokens[j]
+
+        if (type == 'group[]') {
+            newTokens[j] = ['parsed', exports.parseMatrix(data), index]
+        } else if (type == 'group{}') {
+            newTokens[j] = ['parsed', exports.parseSet(data), index]
+        }
+    }
+
     return newTokens
 }
 
@@ -76,12 +86,9 @@ exports.parseExpression = function(grouped) {
 
         if (type == 'group()') {
             return exports.parseExpression(tokens)
-        } else if (type == 'group[]') {
-            return exports.parseMatrix(tokens)
-        } else if (type == 'group{}') {
-            return exports.parseSet(tokens)
         } else {
             let [type, data, index] = grouped[0]
+            if (type == 'parsed') return data
             return {type, data, index}
         }
     }
