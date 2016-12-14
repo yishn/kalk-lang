@@ -138,7 +138,6 @@ exports.parseExpression = function(grouped) {
     }
 
     let operatorPrecedence = [
-        [[':='], 'right'],
         [['+', '-'], 'left'],
         [['*', '/'], 'left'],
         [['^'], 'right']
