@@ -156,3 +156,49 @@ test('parse matrix', t => {
         "index": 0
     })
 })
+
+test('parse conditions', t => {
+    let input = 'x in A or x in B and x not in C'
+    let tokens = tokenize(input)
+
+    t.deepEqual(parser.parseCondition(tokens), {
+        "type": "or",
+        "data": [
+            {
+                "type": "in",
+                "data": [
+                    {"type": "identifier", "data": "x", "index": 0},
+                    {"type": "identifier", "data": "A", "index": 5}
+                ],
+                "index": 2
+            },
+            {
+                "type": "and",
+                "data": [
+                    {
+                        "type": "in",
+                        "data": [
+                            {"type": "identifier", "data": "x", "index": 10},
+                            {"type": "identifier", "data": "B", "index": 15}
+                        ],
+                        "index": 12
+                    },
+                    {
+                        "type": "not",
+                        "data": {
+                            "type": "in",
+                            "data": [
+                                {"type": "identifier", "data": "x", "index": 21},
+                                {"type": "identifier", "data": "C", "index": 30}
+                            ],
+                            "index": 27
+                        },
+                        "index": 23
+                    }
+                ],
+                "index": 17
+            }
+        ],
+        "index": 7
+    })
+})

@@ -122,6 +122,97 @@ exports.parseForRule = function(grouped) {
     }
 }
 
+exports.parseCondition = function(grouped) {
+    if (grouped.length == 0) {
+        return null
+    } else if (grouped.length == 1) {
+        let [type, tokens, ] = grouped[0]
+
+        if (type == 'group()') {
+            return exports.parseCondition(tokens)
+        } else {
+            let [type, data, index] = grouped[0]
+            if (type == 'parsed') return data
+            return {type, data, index}
+        }
+    }
+
+    // For rules
+
+    let forSplit = splitTokens(grouped, [['keyword', 'forall'], ['keyword', 'forany']])
+
+    if (forSplit.length > 1) {
+        let condition = exports.parseCondition(forSplit[0])
+        let forRules = forSplit.slice(1)
+
+        forRules = forRules.map(x => ({
+            type: grouped[grouped.findFromLeft(x) - 1][1],
+            rule: exports.parseForRule(x)
+        }))
+
+        return {type: 'condition', data: [condition, ...forRules]}
+    }
+
+    // And/Or operators
+
+    let operatorPrecedence = ['or', 'and']
+
+    for (let type of operatorPrecedence) {
+        let i = findFromLeft(grouped, [['logical', type]])
+        if (i < 0) continue
+
+        let left = exports.parseCondition(grouped.slice(0, i))
+        let right = exports.parseCondition(grouped.slice(i + 1))
+
+        return {
+            type,
+            data: [left, right],
+            index: grouped[i][2]
+        }
+    }
+
+    // Not operator
+
+    if (tokenEqual(grouped[0], ['logical', 'not'])) {
+        return {
+            type: 'not',
+            data: exports.parseCondition(grouped.slice(1)),
+            index: grouped[0][2]
+        }
+    }
+
+    // In operator
+
+    let i = findFromLeft(grouped, [['keyword', 'in']])
+
+    if (i >= 0) {
+        let left = grouped.slice(0, i)
+        let right = grouped.slice(i + 1)
+        let negate = false
+
+        if (tokenEqual(left.slice(-1)[0], ['logical', 'not'])) {
+            negate = true
+            left.pop()
+        }
+
+        let result = {
+            type: 'in',
+            data: [left, right].map(x => exports.parseExpression(x)),
+            index: grouped[i][2]
+        }
+
+        if (negate) result = {
+            type: 'not',
+            data: result,
+            index: grouped[i - 1][2]
+        }
+
+        return result
+    }
+
+    return null
+}
+
 exports.parseExpression = function(grouped) {
     if (grouped.length == 0) {
         return null
