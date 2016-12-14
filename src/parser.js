@@ -106,7 +106,7 @@ exports.parseForRule = function(grouped) {
     let condition = ifSplit[1] && exports.parseCondition(ifSplit[1])
 
     if (ifSplit.length > 2)
-        throw new ParseError('Syntax error: Unexpected `if` in set generator rule', ifSplit[1][2])
+        throw new ParseError('Syntax error: Unexpected `if` in set generator rule', ifSplit[2][2])
     if (inRule.length != 3)
         throw new ParseError('Syntax error: Expecting `in` statement', inRule[0][2])
 
