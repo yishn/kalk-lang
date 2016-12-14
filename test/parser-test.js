@@ -190,3 +190,65 @@ test('parse conditions', t => {
         "index": 0
     })
 })
+
+test('parse conditions with for rules', t => {
+    let input = '0 <= x <= 1 forall x in A if x /= 3'
+    let tokens = tokenize(input)
+
+    t.deepEqual(parser.parseCondition(tokens), {
+        "type": "forall",
+        "data": [
+            {
+                "type": "forrule",
+                "data": [
+                    {
+                        "type": "in",
+                        "data": [
+                            {"type": "identifier", "data": "x", "index": 19},
+                            {"type": "identifier", "data": "A", "index": 24}
+                        ],
+                        "index": 21
+                    },
+                    {
+                        "type": "compare",
+                        "data": [
+                            {
+                                "type": "/=",
+                                "data": [
+                                    {"type": "identifier", "data": "x", "index": 29},
+                                    {"type": "number", "data": "3", "index": 34}
+                                ],
+                                "index": 31
+                            }
+                        ],
+                        "index": 29
+                    }
+                ],
+                "index": 19
+            },
+            {
+                "type": "compare",
+                "data": [
+                    {
+                        "type": "<=",
+                        "data": [
+                            {"type": "number", "data": "0", "index": 0},
+                            {"type": "identifier", "data": "x", "index": 5}
+                        ],
+                        "index": 2
+                    },
+                    {
+                        "type": "<=",
+                        "data": [
+                            {"type": "identifier", "data": "x", "index": 5},
+                            {"type": "number", "data": "1", "index": 10}
+                        ],
+                        "index": 7
+                    }
+                ],
+                "index": 0
+            }
+        ],
+        "index": 12
+    })
+})

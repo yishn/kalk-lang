@@ -117,7 +117,17 @@ exports.parseForRule = function(grouped) {
 
     return {
         type: 'forrule',
-        data: [exports.parseExpression(first), exports.parseExpression(second), condition],
+        data: [
+            {
+                type: 'in',
+                data: [
+                    exports.parseExpression([first]),
+                    exports.parseExpression([second]),
+                ],
+                index: operator[2]
+            },
+            condition
+        ],
         index: first[2]
     }
 }
@@ -139,18 +149,17 @@ exports.parseCondition = function(grouped) {
 
     // For rules
 
-    let forSplit = splitTokens(grouped, [['keyword', 'forall'], ['keyword', 'forany']])
+    let forIndex = findFromRight(grouped, [['keyword', 'forall'], ['keyword', 'forany']])
 
-    if (forSplit.length > 1) {
-        let condition = exports.parseCondition(forSplit[0])
-        let forRules = forSplit.slice(1)
+    if (forIndex >= 0) {
+        let condition = exports.parseCondition(grouped.slice(0, forIndex))
+        let forRule = exports.parseForRule(grouped.slice(forIndex + 1))
 
-        forRules = forRules.map(x => ({
-            type: grouped[grouped.findFromLeft(x) - 1][1],
-            rule: exports.parseForRule(x)
-        }))
-
-        return {type: 'condition', data: [condition, ...forRules]}
+        return {
+            type: grouped[forIndex][1],
+            data: [forRule, condition],
+            index: grouped[forIndex][2]
+        }
     }
 
     // And/Or operators
