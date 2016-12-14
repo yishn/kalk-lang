@@ -34,7 +34,7 @@ test('parse expression', t => {
     let input = '5+4*3'
     let tokens = tokenize(input)
 
-    t.deepEqual(parser.parse(tokens), {
+    t.deepEqual(parser.parseExpression(tokens), {
         "type": "+",
         "data": [
             {
@@ -98,7 +98,7 @@ test('parse matrix', t => {
     let input = '[1, 0, 0; 0, 1, 0; 0, 0, 1]'
     let tokens = tokenize(input)
 
-    t.deepEqual(parser.parse(tokens), {
+    t.deepEqual(parser.parseMatrix(tokens), {
         "type": "matrix",
         "data": [
             [
@@ -153,6 +153,6 @@ test('parse matrix', t => {
                 }
             ]
         ],
-        "index": 1
+        "index": 0
     })
 })

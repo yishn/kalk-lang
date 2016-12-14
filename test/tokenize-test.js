@@ -144,7 +144,7 @@ test('tokenize definitions', t => {
         ['number', '2', 25],
         ['separator', '|', 27],
         ['identifier', 'i', 29],
-        ['identifier', 'in', 31],
+        ['keyword', 'in', 31],
         ['parenthesis', '{', 34],
         ['number', '1', 35],
         ['separator', ',', 36],
