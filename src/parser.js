@@ -228,6 +228,20 @@ exports.parseExpression = function(grouped) {
         }
     }
 
+    // Parse commas
+
+    let splitted = splitTokens(grouped, [['separator', ',']])
+
+    if (splitted.length > 1) {
+        return {
+            type: 'commas',
+            data: splitted.map(x => exports.parseExpression(x)),
+            index: grouped[0][2]
+        }
+    }
+
+    // Parse arithmetic operators
+
     let operatorPrecedence = [
         [['+', '-'], 'left'],
         [['*', '/'], 'left'],
