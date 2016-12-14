@@ -32,9 +32,9 @@ test('group input', t => {
 
 test('parse expression', t => {
     let input = '5+4*3'
-    let tokens = tokenize(input)
+    let grouped = parser.group(tokenize(input))
 
-    t.deepEqual(parser.parseExpression(tokens), {
+    t.deepEqual(parser.parseExpression(grouped), {
         "type": "+",
         "data": [
             {"type": "number", "data": "5", "index": 0},
@@ -51,9 +51,9 @@ test('parse expression', t => {
     })
 
     input = '(5+4) * 3'
-    tokens = tokenize(input)
+    grouped = parser.group(tokenize(input))
 
-    t.deepEqual(parser.parse(tokens), {
+    t.deepEqual(parser.parse(grouped), {
         "type": "*",
         "data": [
             {
@@ -72,9 +72,9 @@ test('parse expression', t => {
 
 test('parse matrix', t => {
     let input = '[1, 0, 0; 0, 1, 0; 0, 0, 1]'
-    let tokens = tokenize(input)
+    let grouped = parser.group(tokenize(input))
 
-    t.deepEqual(parser.parseMatrix(tokens), {
+    t.deepEqual(parser.parseExpression(grouped), {
         "type": "matrix",
         "data": [
             [
@@ -93,15 +93,15 @@ test('parse matrix', t => {
                 {"type": "number", "data": "1", "index": 25}
             ]
         ],
-        "index": 0
+        "index": 1
     })
 })
 
 test('parse conditions', t => {
     let input = 'x in A or x in B and x not in C'
-    let tokens = tokenize(input)
+    let grouped = parser.group(tokenize(input))
 
-    t.deepEqual(parser.parseCondition(tokens), {
+    t.deepEqual(parser.parseCondition(grouped), {
         "type": "or",
         "data": [
             {
@@ -143,9 +143,9 @@ test('parse conditions', t => {
     })
 
     input = '0 <= x, y < 5 /= z'
-    tokens = tokenize(input)
+    grouped = parser.group(tokenize(input))
 
-    t.deepEqual(parser.parseCondition(tokens), {
+    t.deepEqual(parser.parseCondition(grouped), {
         "type": "compare",
         "data": [
             {
@@ -192,10 +192,10 @@ test('parse conditions', t => {
 })
 
 test('parse conditions with for rules', t => {
-    let input = '0 <= x <= 1 forall x in A if x /= 3'
-    let tokens = tokenize(input)
+    let input = '0 <= x <= 1 forall [x, y] in A if y /= x'
+    let grouped = parser.group(tokenize(input))
 
-    t.deepEqual(parser.parseCondition(tokens), {
+    t.deepEqual(parser.parseCondition(grouped), {
         "type": "forall",
         "data": [
             {
@@ -204,10 +204,19 @@ test('parse conditions with for rules', t => {
                     {
                         "type": "in",
                         "data": [
-                            {"type": "identifier", "data": "x", "index": 19},
-                            {"type": "identifier", "data": "A", "index": 24}
+                            {
+                                "type": "matrix",
+                                "data": [
+                                    [
+                                        {"type": "identifier", "data": "x", "index": 20},
+                                        {"type": "identifier", "data": "y", "index": 23}
+                                    ]
+                                ],
+                                "index": 20
+                            },
+                            {"type": "identifier", "data": "A", "index": 29}
                         ],
-                        "index": 21
+                        "index": 26
                     },
                     {
                         "type": "compare",
@@ -215,13 +224,13 @@ test('parse conditions with for rules', t => {
                             {
                                 "type": "/=",
                                 "data": [
-                                    {"type": "identifier", "data": "x", "index": 29},
-                                    {"type": "number", "data": "3", "index": 34}
+                                    {"type": "identifier", "data": "y", "index": 34},
+                                    {"type": "identifier", "data": "x", "index": 39}
                                 ],
-                                "index": 31
+                                "index": 36
                             }
                         ],
-                        "index": 29
+                        "index": 34
                     }
                 ],
                 "index": 19
