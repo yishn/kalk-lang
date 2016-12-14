@@ -8,7 +8,7 @@ function tokenize(input) {
         compare: /^(=|(<|>)=?|\/=)/,
         operator: /^(\+|-|\*|\/|\^|:=)/,
         logical: /^(not|and|or)\b/,
-        keyword: /^(\.{3}|#|(mod|for(all|any)|if|(not\s+)?in)\b)/,
+        keyword: /^(\.{3}|#|(mod|for(all|any)|if|in)\b)/,
         number: /^\d+(\.\d+)?/,
         identifier: /^[^\d\W_][^\W_]*('|~)*/,
         ignore: /^(\s+|--.*)/

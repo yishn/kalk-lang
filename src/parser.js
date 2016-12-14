@@ -87,16 +87,38 @@ exports.parseSet = function(grouped) {
     } else if (left.length == 2) {
         [left, right] = left
     } else if (left.length > 2) {
-        throw new ParseError('Syntax error: Invalid set description')
+        throw new ParseError('Syntax error: Invalid set description', left[1][2])
     }
 
     let items = splitTokens(left, [['separator', ',']]).map(x => exports.parseExpression(x))
-    let rules = right && splitTokens(right, [['separator', ',']]).map(x => exports.parseCondition(x))
+    let rules = right && splitTokens(right, [['separator', ',']]).map(x => exports.parseForRule(x))
 
     return {
         type: 'set',
         data: [items, rules],
         index: grouped[0][2]
+    }
+}
+
+exports.parseForRule = function(grouped) {
+    let ifSplit = splitTokens(grouped, [['keyword', 'if']])
+    let inRule = ifSplit[0]
+    let condition = ifSplit[1] && exports.parseCondition(ifSplit[1])
+
+    if (ifSplit.length > 2)
+        throw new ParseError('Syntax error: Unexpected `if` in set generator rule', ifSplit[1][2])
+    if (inRule.length != 3)
+        throw new ParseError('Syntax error: Expecting `in` statement', inRule[0][2])
+
+    let [first, operator, second] = inRule
+
+    if (!tokenEqual(operator, ['keyword', 'in']))
+        throw new ParseError('Syntax error: Expecting `in` keyword', operator[2])
+
+    return {
+        type: 'forrule',
+        data: [exports.parseExpression(first), exports.parseExpression(second), condition],
+        index: first[2]
     }
 }
 
