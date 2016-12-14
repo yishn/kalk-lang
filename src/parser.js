@@ -210,6 +210,27 @@ exports.parseCondition = function(grouped) {
         return result
     }
 
+    // Comparisons
+
+    let indices = findAll(grouped, ['=', '/=', '<=', '<', '>', '>='].map(x => ['compare', x]))
+
+    if (indices.length > 0) {
+        let compares = indices.map((i, j) => ({
+            type: grouped[i][1],
+            data: [
+                grouped.slice(indices[j - 1] + 1 || 0, i),
+                grouped.slice(i + 1, indices[j + 1] || grouped.length)
+            ].map(x => exports.parseExpression(x)),
+            index: grouped[i][2]
+        }))
+
+        return {
+            type: 'compare',
+            data: compares,
+            index: grouped[0][2]
+        }
+    }
+
     return null
 }
 

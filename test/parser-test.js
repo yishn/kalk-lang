@@ -37,24 +37,12 @@ test('parse expression', t => {
     t.deepEqual(parser.parseExpression(tokens), {
         "type": "+",
         "data": [
-            {
-                "type": "number",
-                "data": "5",
-                "index": 0
-            },
+            {"type": "number", "data": "5", "index": 0},
             {
                 "type": "*",
                 "data": [
-                    {
-                        "type": "number",
-                        "data": "4",
-                        "index": 2
-                    },
-                    {
-                        "type": "number",
-                        "data": "3",
-                        "index": 4
-                    }
+                    {"type": "number", "data": "4", "index": 2},
+                    {"type": "number", "data": "3", "index": 4}
                 ],
                 "index": 3
             }
@@ -71,24 +59,12 @@ test('parse expression', t => {
             {
                 "type": "+",
                 "data": [
-                    {
-                        "type": "number",
-                        "data": "5",
-                        "index": 1
-                    },
-                    {
-                        "type": "number",
-                        "data": "4",
-                        "index": 3
-                    }
+                    {"type": "number", "data": "5", "index": 1},
+                    {"type": "number", "data": "4", "index": 3}
                 ],
                 "index": 2
             },
-            {
-                "type": "number",
-                "data": "3",
-                "index": 8
-            }
+            {"type": "number", "data": "3", "index": 8}
         ],
         "index": 6
     })
@@ -102,55 +78,19 @@ test('parse matrix', t => {
         "type": "matrix",
         "data": [
             [
-                {
-                    "type": "number",
-                    "data": "1",
-                    "index": 1
-                },
-                {
-                    "type": "number",
-                    "data": "0",
-                    "index": 4
-                },
-                {
-                    "type": "number",
-                    "data": "0",
-                    "index": 7
-                }
+                {"type": "number", "data": "1", "index": 1},
+                {"type": "number", "data": "0", "index": 4},
+                {"type": "number", "data": "0", "index": 7}
             ],
             [
-                {
-                    "type": "number",
-                    "data": "0",
-                    "index": 10
-                },
-                {
-                    "type": "number",
-                    "data": "1",
-                    "index": 13
-                },
-                {
-                    "type": "number",
-                    "data": "0",
-                    "index": 16
-                }
+                {"type": "number", "data": "0", "index": 10},
+                {"type": "number", "data": "1", "index": 13},
+                {"type": "number", "data": "0", "index": 16}
             ],
             [
-                {
-                    "type": "number",
-                    "data": "0",
-                    "index": 19
-                },
-                {
-                    "type": "number",
-                    "data": "0",
-                    "index": 22
-                },
-                {
-                    "type": "number",
-                    "data": "1",
-                    "index": 25
-                }
+                {"type": "number", "data": "0", "index": 19},
+                {"type": "number", "data": "0", "index": 22},
+                {"type": "number", "data": "1", "index": 25}
             ]
         ],
         "index": 0
@@ -200,5 +140,53 @@ test('parse conditions', t => {
             }
         ],
         "index": 7
+    })
+
+    input = '0 <= x, y < 5 /= z'
+    tokens = tokenize(input)
+
+    t.deepEqual(parser.parseCondition(tokens), {
+        "type": "compare",
+        "data": [
+            {
+                "type": "<=",
+                "data": [
+                    {"type": "number", "data": "0", "index": 0},
+                    {
+                        "type": "commas",
+                        "data": [
+                            {"type": "identifier", "data": "x", "index": 5},
+                            {"type": "identifier", "data": "y", "index": 8}
+                        ],
+                        "index": 5
+                    }
+                ],
+                "index": 2
+            },
+            {
+                "type": "<",
+                "data": [
+                    {
+                        "type": "commas",
+                        "data": [
+                            {"type": "identifier", "data": "x", "index": 5},
+                            {"type": "identifier", "data": "y", "index": 8}
+                        ],
+                        "index": 5
+                    },
+                    {"type": "number", "data": "5", "index": 12}
+                ],
+                "index": 10
+            },
+            {
+                "type": "/=",
+                "data": [
+                    {"type": "number", "data": "5", "index": 12},
+                    {"type": "identifier", "data": "z", "index": 17}
+                ],
+                "index": 14
+            }
+        ],
+        "index": 0
     })
 })
