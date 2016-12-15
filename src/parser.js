@@ -233,11 +233,11 @@ exports.parseCondition = function(grouped) {
             index: grouped[i][2]
         }))
 
-        return {
+        return compares.length > 1 ? {
             type: 'compare',
             data: compares,
             index: grouped[0][2]
-        }
+        } : compares[0]
     }
 
     return null

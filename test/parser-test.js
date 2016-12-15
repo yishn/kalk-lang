@@ -219,18 +219,12 @@ test('parse conditions with for rules', t => {
                         "index": 26
                     },
                     {
-                        "type": "compare",
+                        "type": "/=",
                         "data": [
-                            {
-                                "type": "/=",
-                                "data": [
-                                    {"type": "identifier", "data": "y", "index": 34},
-                                    {"type": "identifier", "data": "x", "index": 39}
-                                ],
-                                "index": 36
-                            }
+                            {"type": "identifier", "data": "y", "index": 34},
+                            {"type": "identifier", "data": "x", "index": 39}
                         ],
-                        "index": 34
+                        "index": 36
                     }
                 ],
                 "index": 19
