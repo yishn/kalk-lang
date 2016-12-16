@@ -51,7 +51,11 @@ exports.group = function(tokens) {
                 }
             }
 
-            newTokens.push([`group${open}${close}`, exports.group(tokens.slice(i + 1, j)), index])
+            newTokens.push([
+                `group${open}${close}`,
+                [tokens[i], ...exports.group(tokens.slice(i + 1, j)), tokens[j]],
+                index
+            ])
             i = j + 1
         } else {
             newTokens.push(tokens[i])
@@ -62,7 +66,10 @@ exports.group = function(tokens) {
     for (let j = 0; j < newTokens.length; j++) {
         let [type, data, index] = newTokens[j]
 
-        if (type == 'group[]') {
+        if (type == 'group()') {
+            newTokens[j][1].pop()
+            newTokens[j][1].shift()
+        } else if (type == 'group[]') {
             newTokens[j] = ['parsed', exports.parseMatrix(data), index]
         } else if (type == 'group{}') {
             newTokens[j] = ['parsed', exports.parseSet(data), index]
@@ -73,7 +80,7 @@ exports.group = function(tokens) {
 }
 
 exports.parseMatrix = function(grouped) {
-    let data = splitTokens(grouped, [['separator', ';']])
+    let data = splitTokens(grouped.slice(1, -1), [['separator', ';']])
         .map(row => splitTokens(row, [['separator', ',']]).map(exports.parseExpression))
 
     return {
@@ -84,7 +91,7 @@ exports.parseMatrix = function(grouped) {
 }
 
 exports.parseSet = function(grouped) {
-    let left = splitTokens(grouped, [['separator', '|']])
+    let left = splitTokens(grouped.slice(1, -1), [['separator', '|']])
     let right = null
 
     if (left.length == 1) {
