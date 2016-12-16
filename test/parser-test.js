@@ -53,7 +53,7 @@ test('parse simple expressions', t => {
     input = '(5+4) * 3'
     grouped = parser.group(tokenize(input))
 
-    t.deepEqual(parser.parse(grouped), {
+    t.deepEqual(parser.parseExpression(grouped), {
         "type": "*",
         "data": [
             {
