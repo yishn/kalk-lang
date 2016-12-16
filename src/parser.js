@@ -13,7 +13,7 @@ let findFrom = (from, haystack, needles) => from == 'left'
 let findAll = (haystack, needles) => haystack
     .map((t, i) => needles.some(n => tokenEqual(t, n)) ? i : null)
     .filter(x => x != null)
-let splitTokens = (haystack, needles) => findAll(haystack, needles).concat([haystack.length])
+let splitTokens = (haystack, needles) => [...findAll(haystack, needles), haystack.length]
     .map((index, j, indices) => haystack.slice(indices[j - 1] + 1 || 0, index))
 
 exports.parse = function(tokens) {
@@ -69,7 +69,7 @@ exports.group = function(tokens) {
 
 exports.parseMatrix = function(grouped) {
     let data = splitTokens(grouped, [['separator', ';']])
-        .map(row => splitTokens(row, [['separator', ',']]).map(x => exports.parseExpression(x)))
+        .map(row => splitTokens(row, [['separator', ',']]).map(exports.parseExpression))
 
     return {
         type: 'matrix',
@@ -90,7 +90,7 @@ exports.parseSet = function(grouped) {
         throw new ParseError('Syntax error: Invalid set description', left[1][2])
     }
 
-    let items = splitTokens(left, [['separator', ',']]).map(x => exports.parseExpression(x))
+    let items = splitTokens(left, [['separator', ',']]).map(exports.parseExpression)
     let rules = right && splitTokens(right, [['separator', ',']]).map(x => exports.parseForRule(x))
 
     return {
@@ -207,7 +207,7 @@ exports.parseCondition = function(grouped) {
 
         let result = {
             type: 'in',
-            data: [left, right].map(x => exports.parseExpression(x)),
+            data: [left, right].map(exports.parseExpression),
             index: grouped[i][2]
         }
 
@@ -230,7 +230,7 @@ exports.parseCondition = function(grouped) {
             data: [
                 grouped.slice(indices[j - 1] + 1 || 0, i),
                 grouped.slice(i + 1, indices[j + 1] || grouped.length)
-            ].map(x => exports.parseExpression(x)),
+            ].map(exports.parseExpression),
             index: grouped[i][2]
         }))
 
@@ -266,9 +266,24 @@ exports.parseExpression = function(grouped) {
     if (splitted.length > 1) {
         return {
             type: 'commas',
-            data: splitted.map(x => exports.parseExpression(x)),
+            data: splitted.map(exports.parseExpression),
             index: grouped[0][2]
         }
+    }
+
+    // Parse mod
+
+    let modIndex = findFromLeft(grouped.slice(0, -1), [['keyword', 'mod']])
+
+    if (modIndex >= 0) {
+        let result = {
+            type: 'mod',
+            data: [grouped.slice(0, modIndex), [grouped[modIndex + 1]]].map(exports.parseExpression),
+            index: grouped[modIndex][2]
+        }
+
+        let newTokens = [['parsed', result, result.index], ...grouped.slice(modIndex + 2)]
+        return exports.parseExpression(newTokens)
     }
 
     // Parse arithmetic operators
@@ -294,42 +309,46 @@ exports.parseExpression = function(grouped) {
         }
     }
 
+    // Parse #
+
+    let hashIndex = findFromLeft(grouped.slice(0, -1), [['keyword', '#']])
+
+    if (hashIndex >= 0) {
+        let result = {
+            type: '#',
+            data: exports.parseExpression([grouped[hashIndex + 1]]),
+            index: grouped[hashIndex][2]
+        }
+
+        let newTokens = [...grouped]
+        newTokens.splice(hashIndex, 2, ['parsed', result, result.index])
+
+        return exports.parseExpression(newTokens)
+    }
+
     // Parse function calls
 
-    let i = grouped.slice(1).findIndex(([t, ]) => t == 'group()')
-    i++
+    let groupIndex = grouped.slice(1).findIndex(([t, ]) => t == 'group()')
+    groupIndex++
 
-    if (i > 0) {
+    if (groupIndex > 0) {
         let result = {
             type: 'call',
-            data: [[grouped[i - 1]], [grouped[i]]].map(x => exports.parseExpression(x)),
-            index: grouped[i - 1][2]
+            data: [[grouped[groupIndex - 1]], [grouped[groupIndex]]].map(exports.parseExpression),
+            index: grouped[groupIndex - 1][2]
         }
 
-        if (i > 1) {
-            result = {
-                type: '*',
-                data: [exports.parseExpression(grouped.slice(0, i - 1)), result],
-                index: grouped[0][2]
-            }
-        }
+        let newTokens = [...grouped]
+        newTokens.splice(groupIndex - 1, 2, ['parsed', result, result.index])
 
-        if (i < grouped.length - 1) {
-            result = {
-                type: '*',
-                data: [result, exports.parseExpression(grouped.slice(i + 1))],
-                index: result.index
-            }
-        }
-
-        return result
+        return exports.parseExpression(newTokens)
     }
 
     // Interpret everything else as multiplication
 
     let newTokens = []
 
-    for (let token in grouped) {
+    for (let token of grouped) {
         newTokens.push(token, ['operator', '*', token[2]])
     }
 
@@ -353,7 +372,7 @@ exports.parseAssignment = function(grouped) {
     }
 
     let splitted = splitTokens(grouped, [['operator', ':=']])
-    let data = splitted.map(x => exports.parseExpression(x))
+    let data = splitted.map(exports.parseExpression)
     data.push(condition)
 
     return {

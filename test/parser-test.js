@@ -70,6 +70,34 @@ test('parse simple expressions', t => {
     })
 })
 
+test('parse mod expression', t => {
+    let input = 'a + b*c mod 5'
+    let grouped = parser.group(tokenize(input))
+
+    t.deepEqual(parser.parseExpression(grouped), {
+        "type": "mod",
+        "data": [
+            {
+                "type": "+",
+                "data": [
+                    {"type": "identifier", "data": "a", "index": 0},
+                    {
+                        "type": "*",
+                        "data": [
+                            {"type": "identifier", "data": "b", "index": 4},
+                            {"type": "identifier", "data": "c", "index": 6}
+                        ],
+                        "index": 5
+                    }
+                ],
+                "index": 2
+            },
+            {"type": "number", "data": "5", "index": 12}
+        ],
+        "index": 8
+    })
+})
+
 test('parse matrix', t => {
     let input = '[1, 0, 0; 0, 1, 0; 0, 0, 1]'
     let grouped = parser.group(tokenize(input))

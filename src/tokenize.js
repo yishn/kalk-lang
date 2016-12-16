@@ -8,7 +8,7 @@ function tokenize(input) {
         compare: /^(=|(<|>)=?|\/=)/,
         operator: /^(\+|-|\*|\/|\^|:=)/,
         logical: /^(not|and|or)\b/,
-        keyword: /^(\.{3}|#|(mod|for(all|any)|if|in)\b)/,
+        keyword: /^(\.{3}|#|(_|mod|for(all|any)|if|in)\b)/,
         number: /^\d+(\.\d+)?/,
         identifier: /^[^\d\W][^\W]*('|~)*/,
         ignore: /^(\s+|--.*)/
@@ -36,7 +36,7 @@ function tokenize(input) {
         }
 
         if (length == 0) {
-            throw new ParseError('Syntax error: Invalid or unexpected token', i)
+            throw new ParseError('Syntax error: Invalid token', i)
         }
 
         i += length
