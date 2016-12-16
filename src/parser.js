@@ -1,3 +1,4 @@
+const tokenize = require('./tokenize')
 const ParseError = require('./parse-error')
 
 let tokenEqual = ([a, b], [c, d]) => a == c && b == d
@@ -16,9 +17,13 @@ let findAll = (haystack, needles) => haystack
 let splitTokens = (haystack, needles) => [...findAll(haystack, needles), haystack.length]
     .map((index, j, indices) => haystack.slice(indices[j - 1] + 1 || 0, index))
 
-exports.parse = function(tokens) {
-    let grouped = exports.group(tokens)
-    let tree = exports.parseExpression(grouped)
+exports.parse = function(input) {
+    let grouped = exports.group(tokenize(input))
+
+    let tree = exports.parseAssignment(grouped)
+    if (!tree) tree = exports.parseCondition(grouped)
+    if (!tree) tree = exports.parseExpression(grouped)
+
     return tree
 }
 
@@ -133,7 +138,7 @@ exports.parseCondition = function(grouped) {
         } else {
             let [type, data, index] = grouped[0]
             if (type == 'parsed') return data
-            return {type, data, index}
+            return null
         }
     }
 
@@ -361,6 +366,9 @@ exports.parseAssignment = function(grouped) {
     }
 
     let splitted = splitTokens(grouped, [['operator', ':=']])
+
+    if (splitted.length <= 1) return null
+
     let data = splitted.map(exports.parseExpression)
     data.push(condition)
 
