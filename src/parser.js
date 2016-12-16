@@ -5,15 +5,19 @@ let tokenEqual = ([a, b], [c, d]) => a == c && b == d
 
 let findFromLeft = (haystack, needles) => haystack
     .findIndex(t => needles.some(n => tokenEqual(t, n)))
+
 let findFromRight = (haystack, needles) => [...Array(haystack.length)]
     .map((_, i) => haystack.length - i - 1)
     .find(i => needles.some(n => tokenEqual(n, haystack[i]))) || -1
+
 let findFrom = (from, haystack, needles) => from == 'left'
     ? findFromLeft(haystack, needles)
     : findFromRight(haystack, needles)
+
 let findAll = (haystack, needles) => haystack
     .map((t, i) => needles.some(n => tokenEqual(t, n)) ? i : null)
     .filter(x => x != null)
+
 let splitTokens = (haystack, needles) => [...findAll(haystack, needles), haystack.length]
     .map((index, j, indices) => haystack.slice(indices[j - 1] + 1 || 0, index))
 
@@ -28,13 +32,13 @@ exports.parse = function(input) {
 }
 
 exports.group = function(tokens) {
+    let openingParentheses = ['(', '{', '[']
+    let closingParentheses = [')', '}', ']']
     let newTokens = []
     let i = 0
 
     while (i < tokens.length) {
         let [type, open, index] = tokens[i]
-        let openingParentheses = ['(', '{', '[']
-        let closingParentheses = [')', '}', ']']
         let k = openingParentheses.indexOf(tokens[i][1])
 
         if (type == 'parenthesis' && k >= 0) {
@@ -56,6 +60,7 @@ exports.group = function(tokens) {
                 [tokens[i], ...exports.group(tokens.slice(i + 1, j)), tokens[j]],
                 index
             ])
+            
             i = j + 1
         } else {
             newTokens.push(tokens[i])
