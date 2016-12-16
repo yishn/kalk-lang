@@ -17,5 +17,8 @@
   },
   "scripts": {
     "test": "ava"
+  },
+  "dependencies": {
+    "decimal.js": "^7.1.0"
   }
 }
