@@ -326,10 +326,43 @@ test('parse set', t =>  {
         ],
         "index": 1
     })
+
+    input = '{1, 3, ..., 10}'
+    grouped = parser.group(tokenize(input))
+
+    t.deepEqual(parser.parseExpression(grouped), {
+        "type": "set",
+        "data": [
+            [
+                {
+                    "type": "number",
+                    "data": "1",
+                    "index": 1
+                },
+                {
+                    "type": "number",
+                    "data": "3",
+                    "index": 4
+                },
+                {
+                    "type": "keyword",
+                    "data": "...",
+                    "index": 7
+                },
+                {
+                    "type": "number",
+                    "data": "10",
+                    "index": 12
+                }
+            ],
+            null
+        ],
+        "index": 1
+    })
 })
 
 test('parse function call', t => {
-    let input = '(a + b) f(x, y) '
+    let input = '(a + b) f(x, y)'
     let grouped = parser.group(tokenize(input))
 
     t.deepEqual(parser.parseExpression(grouped), {
@@ -357,6 +390,43 @@ test('parse function call', t => {
                     }
                 ],
                 "index": 8
+            }
+        ],
+        "index": 0
+    })
+})
+
+test('parse assignment', t => {
+    let input = 'x := f(n) := n^2 if n >= 0'
+    let grouped = parser.group(tokenize(input))
+
+    t.deepEqual(parser.parseAssignment(grouped), {
+        "type": "assign",
+        "data": [
+            {"type": "identifier", "data": "x", "index": 0},
+            {
+                "type": "call",
+                "data": [
+                    {"type": "identifier", "data": "f", "index": 5},
+                    {"type": "identifier", "data": "n", "index": 7}
+                ],
+                "index": 5
+            },
+            {
+                "type": "^",
+                "data": [
+                    {"type": "identifier", "data": "n", "index": 13},
+                    {"type": "number", "data": "2", "index": 15}
+                ],
+                "index": 14
+            },
+            {
+                "type": ">=",
+                "data": [
+                    {"type": "identifier", "data": "n", "index": 20},
+                    {"type": "number", "data": "0", "index": 25}
+                ],
+                "index": 22
             }
         ],
         "index": 0

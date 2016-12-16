@@ -101,6 +101,9 @@ exports.parseSet = function(grouped) {
 }
 
 exports.parseForRule = function(grouped) {
+    if (grouped.length == 0)
+        throw new ParseError('Syntax Error: Expecting for rule')
+
     let ifSplit = splitTokens(grouped, [['keyword', 'if']])
     let inRule = ifSplit[0]
     let condition = ifSplit[1] && exports.parseCondition(ifSplit[1]) || null
@@ -132,7 +135,7 @@ exports.parseForRule = function(grouped) {
 
 exports.parseCondition = function(grouped) {
     if (grouped.length == 0) {
-        return null
+        throw new ParseError('Syntax Error: Expecting condition')
     } else if (grouped.length == 1) {
         let [type, tokens, ] = grouped[0]
 
@@ -243,7 +246,7 @@ exports.parseCondition = function(grouped) {
 
 exports.parseExpression = function(grouped) {
     if (grouped.length == 0) {
-        return null
+        throw new ParseError('Syntax Error: Expecting expression')
     } else if (grouped.length == 1) {
         let [type, tokens, ] = grouped[0]
 
@@ -333,4 +336,29 @@ exports.parseExpression = function(grouped) {
     newTokens.pop()
 
     return exports.parseExpression(newTokens)
+}
+
+exports.parseAssignment = function(grouped) {
+    if (grouped.length == 0)
+        throw new ParseError('Syntax Error: Expecting assignment')
+
+    let ifSplit = splitTokens(grouped, [['keyword', 'if']])
+    let condition = null
+
+    if (ifSplit.length > 2) {
+        throw new ParseError('Syntax Error: Unexpected second `if` statement', ifSplit[2][2])
+    } else if (ifSplit.length == 2) {
+        condition = exports.parseCondition(ifSplit[1])
+        grouped = ifSplit[0]
+    }
+
+    let splitted = splitTokens(grouped, [['operator', ':=']])
+    let data = splitted.map(x => exports.parseExpression(x))
+    data.push(condition)
+
+    return {
+        type: 'assign',
+        data,
+        index: grouped[0][2]
+    }
 }
