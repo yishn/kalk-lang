@@ -105,31 +105,20 @@ exports.parseForRule = function(grouped) {
         throw new ParseError('Syntax Error: Expecting for rule')
 
     let ifSplit = splitTokens(grouped, [['keyword', 'if']])
-    let inRule = ifSplit[0]
     let condition = ifSplit[1] && exports.parseCondition(ifSplit[1]) || null
 
     if (ifSplit.length > 2)
         throw new ParseError('Syntax error: Unexpected `if` in set generator rule', ifSplit[2][2])
 
-    let [first, operator, ...second] = inRule
+    let inRule = exports.parseCondition(ifSplit[0])
 
-    if (!tokenEqual(operator, ['keyword', 'in']))
+    if (inRule.type != 'in')
         throw new ParseError('Syntax error: Expecting `in` keyword', operator[2])
 
     return {
         type: 'forrule',
-        data: [
-            {
-                type: 'in',
-                data: [
-                    exports.parseExpression([first]),
-                    exports.parseExpression(second),
-                ],
-                index: operator[2]
-            },
-            condition
-        ],
-        index: first[2]
+        data: [inRule, condition],
+        index: grouped[0][2]
     }
 }
 
