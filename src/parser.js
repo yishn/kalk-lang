@@ -80,6 +80,9 @@ exports.group = function(tokens) {
 }
 
 exports.parseMatrix = function(grouped) {
+    if (grouped.length == 2)
+        return {type: 'matrix', data: [[]], index: grouped[0][2]}
+
     let data = splitTokens(grouped.slice(1, -1), [['separator', ';']])
         .map(row => splitTokens(row, [['separator', ',']]).map(exports.parseExpression))
 
@@ -91,6 +94,9 @@ exports.parseMatrix = function(grouped) {
 }
 
 exports.parseSet = function(grouped) {
+    if (grouped.length == 2)
+        return {type: 'set', data: [[], null], index: grouped[0][2]}
+
     let left = splitTokens(grouped.slice(1, -1), [['separator', '|']])
     let right = null
 

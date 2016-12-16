@@ -99,8 +99,17 @@ test('parse mod expression', t => {
 })
 
 test('parse matrix', t => {
-    let input = '[1, 0, 0; 0, 1, 0; 0, 0, 1]'
+    let input = '[]'
     let grouped = parser.group(tokenize(input))
+
+    t.deepEqual(parser.parseExpression(grouped), {
+        "type": "matrix",
+        "data": [[]],
+        "index": 0
+    })
+
+    input = '[1, 0, 0; 0, 1, 0; 0, 0, 1]'
+    grouped = parser.group(tokenize(input))
 
     t.deepEqual(parser.parseExpression(grouped), {
         "type": "matrix",
@@ -121,7 +130,7 @@ test('parse matrix', t => {
                 {"type": "number", "data": "1", "index": 25}
             ]
         ],
-        "index": 1
+        "index": 0
     })
 })
 
@@ -240,7 +249,7 @@ test('parse conditions with for rules', t => {
                                         {"type": "identifier", "data": "y", "index": 23}
                                     ]
                                 ],
-                                "index": 20
+                                "index": 19
                             },
                             {"type": "identifier", "data": "A", "index": 29}
                         ],
@@ -284,9 +293,18 @@ test('parse conditions with for rules', t => {
     })
 })
 
-test('parse set', t =>  {
-    let input = '{x, y | x in X, y in Y}'
+test('parse set', t => {
+    let input = '{}'
     let grouped = parser.group(tokenize(input))
+
+    t.deepEqual(parser.parseExpression(grouped), {
+        "type": "set",
+        "data": [[], null],
+        "index": 0
+    })
+
+    input = '{x, y | x in X, y in Y}'
+    grouped = parser.group(tokenize(input))
 
     t.deepEqual(parser.parseExpression(grouped), {
         "type": "set",
@@ -352,7 +370,7 @@ test('parse set', t =>  {
                 }
             ]
         ],
-        "index": 1
+        "index": 0
     })
 
     input = '{1, 3, ..., 10}'
@@ -385,7 +403,7 @@ test('parse set', t =>  {
             ],
             null
         ],
-        "index": 1
+        "index": 0
     })
 })
 
