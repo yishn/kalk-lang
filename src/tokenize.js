@@ -4,13 +4,13 @@ function tokenize(input) {
     let tokens = []
     let rules = {
         parenthesis: /^(\(|\)|{|}|\[|\])/,
-        separator: /^(,|;|_|\|)/,
+        separator: /^(,|;|\|)/,
         compare: /^(=|(<|>)=?|\/=)/,
         operator: /^(\+|-|\*|\/|\^|:=)/,
         logical: /^(not|and|or)\b/,
         keyword: /^(\.{3}|#|(mod|for(all|any)|if|in)\b)/,
         number: /^\d+(\.\d+)?/,
-        identifier: /^[^\d\W_][^\W_]*('|~)*/,
+        identifier: /^[^\d\W][^\W]*('|~)*/,
         ignore: /^(\s+|--.*)/
     }
 
