@@ -291,5 +291,46 @@ exports.parseExpression = function(grouped) {
         }
     }
 
-    return null
+    // Parse function calls
+
+    let i = grouped.slice(1).findIndex(([t, ]) => t == 'group()')
+    i++
+
+    if (i > 0) {
+        let result = {
+            type: 'call',
+            data: [[grouped[i - 1]], [grouped[i]]].map(x => exports.parseExpression(x)),
+            index: grouped[i - 1][2]
+        }
+
+        if (i > 1) {
+            result = {
+                type: '*',
+                data: [exports.parseExpression(grouped.slice(0, i - 1)), result],
+                index: grouped[0][2]
+            }
+        }
+
+        if (i < grouped.length - 1) {
+            result = {
+                type: '*',
+                data: [result, exports.parseExpression(grouped.slice(i + 1))],
+                index: result.index
+            }
+        }
+
+        return result
+    }
+
+    // Interpret everything else as multiplication
+
+    let newTokens = []
+
+    for (let token in grouped) {
+        newTokens.push(token, ['operator', '*', token[2]])
+    }
+
+    newTokens.pop()
+
+    return exports.parseExpression(newTokens)
 }

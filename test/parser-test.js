@@ -30,7 +30,7 @@ test('group input', t => {
     ])
 })
 
-test('parse expression', t => {
+test('parse simple expressions', t => {
     let input = '5+4*3'
     let grouped = parser.group(tokenize(input))
 
@@ -325,5 +325,40 @@ test('parse set', t =>  {
             ]
         ],
         "index": 1
+    })
+})
+
+test('parse function call', t => {
+    let input = '(a + b) f(x, y) '
+    let grouped = parser.group(tokenize(input))
+
+    t.deepEqual(parser.parseExpression(grouped), {
+        "type": "*",
+        "data": [
+            {
+                "type": "+",
+                "data": [
+                    {"type": "identifier", "data": "a", "index": 1},
+                    {"type": "identifier", "data": "b", "index": 5}
+                ],
+                "index": 3
+            },
+            {
+                "type": "call",
+                "data": [
+                    {"type": "identifier", "data": "f", "index": 8},
+                    {
+                        "type": "commas",
+                        "data": [
+                            {"type": "identifier", "data": "x", "index": 10},
+                            {"type": "identifier", "data": "y", "index": 13}
+                        ],
+                        "index": 10
+                    }
+                ],
+                "index": 8
+            }
+        ],
+        "index": 0
     })
 })
