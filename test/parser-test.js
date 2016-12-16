@@ -255,3 +255,75 @@ test('parse conditions with for rules', t => {
         "index": 12
     })
 })
+
+test('parse set', t =>  {
+    let input = '{x, y | x in X, y in Y}'
+    let grouped = parser.group(tokenize(input))
+
+    t.deepEqual(parser.parseExpression(grouped), {
+        "type": "set",
+        "data": [
+            [
+                {
+                    "type": "identifier",
+                    "data": "x",
+                    "index": 1
+                },
+                {
+                    "type": "identifier",
+                    "data": "y",
+                    "index": 4
+                }
+            ],
+            [
+                {
+                    "type": "forrule",
+                    "data": [
+                        {
+                            "type": "in",
+                            "data": [
+                                {
+                                    "type": "identifier",
+                                    "data": "x",
+                                    "index": 8
+                                },
+                                {
+                                    "type": "identifier",
+                                    "data": "X",
+                                    "index": 13
+                                }
+                            ],
+                            "index": 10
+                        },
+                        null
+                    ],
+                    "index": 8
+                },
+                {
+                    "type": "forrule",
+                    "data": [
+                        {
+                            "type": "in",
+                            "data": [
+                                {
+                                    "type": "identifier",
+                                    "data": "y",
+                                    "index": 16
+                                },
+                                {
+                                    "type": "identifier",
+                                    "data": "Y",
+                                    "index": 21
+                                }
+                            ],
+                            "index": 18
+                        },
+                        null
+                    ],
+                    "index": 16
+                }
+            ]
+        ],
+        "index": 1
+    })
+})
