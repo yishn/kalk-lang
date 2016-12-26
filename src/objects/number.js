@@ -8,7 +8,8 @@ class Number {
         this.numerator = new Decimal(a)
         this.denominator = new Decimal(b)
 
-        if (this.denominator.eq(0)) throw new Error('Division by zero')
+        if (this.denominator.eq(0))
+            throw new Error('Number error: Division by zero')
 
         this.decimal = this.numerator.div(this.denominator)
 
