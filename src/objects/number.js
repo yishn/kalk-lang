@@ -1,7 +1,7 @@
 const Decimal = require('decimal.js')
 
-let gcd = (d, e) => e.eq(0) ? d : gcd(e, d.mod(e))
-let lcm = (d, e) => d.div(gcd(d, e)).mul(e)
+let gcd = (a, b) => b.eq(0) ? a : gcd(b, a.mod(b))
+let lcm = (a, b) => a.div(gcd(a, b)).mul(b)
 
 class Number {
     constructor(a, b = 1) {
@@ -24,17 +24,17 @@ class Number {
     }
 
     add(n) {
+        let common = lcm(this.denominator, n.denominator)
+
         return new Number(
-            this.numerator.mul(n.denominator).add(n.numerator.mul(this.denominator)),
-            this.denominator.mul(n.denominator)
+            this.numerator.mul(common.div(this.denominator))
+                .add(n.numerator.mul(common.div(n.denominator))),
+            common
         )
     }
 
     sub(n) {
-        return new Number(
-            this.numerator.mul(n.denominator).sub(n.numerator.mul(this.denominator)),
-            this.denominator.mul(n.denominator)
-        )
+        return this.add(new Number(n.numerator.neg(), n.denominator))
     }
 
     mul(n) {
